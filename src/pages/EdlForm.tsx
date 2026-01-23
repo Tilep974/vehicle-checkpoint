@@ -56,6 +56,7 @@ import {
   updateEdl,
   completeEdl,
   addDamage,
+  sendEdlPdf,
 } from "@/lib/supabase-queries";
 import type { EdlType, DamageSeverity, Edl } from "@/types/edl";
 
@@ -192,7 +193,27 @@ export default function EdlForm() {
       if (!currentEdl) throw new Error("Enregistrez d'abord l'EDL");
       if (!clientSignature || !agentSignature)
         throw new Error("Signatures requises");
-      return completeEdl(currentEdl.id, clientSignature, agentSignature);
+      
+      // Finaliser l'EDL
+      const completedEdl = await completeEdl(currentEdl.id, clientSignature, agentSignature);
+      
+      // Envoyer le PDF par email
+      try {
+        await sendEdlPdf(currentEdl.id);
+        toast({
+          title: "Email envoyé",
+          description: "L'état des lieux a été envoyé au client.",
+        });
+      } catch (emailError: any) {
+        console.error("Email error:", emailError);
+        toast({
+          title: "EDL finalisé",
+          description: "L'email n'a pas pu être envoyé mais l'EDL est sauvegardé.",
+          variant: "default",
+        });
+      }
+      
+      return completedEdl;
     },
     onSuccess: () => {
       toast({

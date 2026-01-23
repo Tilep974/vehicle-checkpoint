@@ -152,3 +152,12 @@ export async function completeEdl(id: string, clientSignatureUrl: string, agentS
   if (error) throw error;
   return data as Edl;
 }
+
+export async function sendEdlPdf(edlId: string): Promise<{ success: boolean; message: string; pdfHtml?: string }> {
+  const { data, error } = await supabase.functions.invoke('send-edl-pdf', {
+    body: { edlId },
+  });
+
+  if (error) throw error;
+  return data;
+}
