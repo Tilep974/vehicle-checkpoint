@@ -225,6 +225,10 @@ export default function EdlForm() {
         setAgentName(existingEdl.agent_name || "");
         setClientSignature(existingEdl.client_signature_url);
         setAgentSignature(existingEdl.agent_signature_url);
+        // Charger les photos existantes
+        if (existingEdl.photos && existingEdl.photos.length > 0) {
+          setPhotos(existingEdl.photos.map((p) => p.photo_url));
+        }
       }
     }
   }, [rental, type]);
